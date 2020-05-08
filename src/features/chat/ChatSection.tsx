@@ -8,8 +8,7 @@ import { Message, addMessage } from './chatSlice';
 import socketIOClient from 'socket.io-client';
 import MessageReply from './MessageReply';
 
-const ENDPOINT = 'http://localhost:5000';
-const socket = socketIOClient(ENDPOINT);
+const socket = socketIOClient('http://localhost:5000');
 
 export default function ChatSection() {
   const authUser: User = useSelector(selectAuthUser);

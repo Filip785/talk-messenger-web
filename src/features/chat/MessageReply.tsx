@@ -21,7 +21,7 @@ const MessageReply = (props: Props) => {
         avatar={
           <Avatar
             src={authUser.avatar}
-            alt={authUser.name}
+            alt={authUser.username}
           />
         }
         content={

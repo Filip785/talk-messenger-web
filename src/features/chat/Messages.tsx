@@ -14,11 +14,11 @@ export default function  Messages() {
       {messages.map(message => <Comment
         key={message.id}
         className={authUser.id === message.sendingUser.id ? 'message-current' : 'message-friend'}
-        author={<a href={`/profile/${message.sendingUser.id!}`}>{message.sendingUser.name}</a>}
+        author={<a href={`/profile/${message.sendingUser.id!}`}>{message.sendingUser.username}</a>}
         avatar={
           <Avatar
             src={message.sendingUser.avatar}
-            alt={message.sendingUser.name}
+            alt={message.sendingUser.username}
           />
         }
         content={
