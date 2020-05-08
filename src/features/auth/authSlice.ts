@@ -67,10 +67,16 @@ export const authSlice = createSlice({
     attemptRegisterFailureEnd(state) {
       state.registerError = false;
     },
+    signOutReduce(state) {
+      state.user = {
+        loggedIn: { status: false, fromAuth: false },
+        authUser: { id: '', username: '', avatar: '', api_token: '' }
+      }
+    }
   },
 });
 
-export const { attemptLoginFailureEnd, attemptRegisterFailureEnd } = authSlice.actions;
+export const { attemptLoginFailureEnd, attemptRegisterFailureEnd, signOutReduce } = authSlice.actions;
 
 const { attemptLoginReduce, attemptRegisterReduce, attemptLoginFailure, attemptRegisterFailure } = authSlice.actions;
 

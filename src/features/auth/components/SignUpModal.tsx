@@ -44,7 +44,7 @@ export default function SignUpModal(props: Props) {
       getContainer={false}
     >
       <Form
-        name="basic"
+        name="sign-up"
         onFinish={() => dispatch(attemptRegister(form.getFieldValue('username'), form.getFieldValue('password')))}
         form={form}
       >

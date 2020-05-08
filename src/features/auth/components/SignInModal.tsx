@@ -44,7 +44,7 @@ export default function SignInModal(props: Props) {
       getContainer={false}
     >
       <Form
-        name="basic"
+        name="sign-in"
         onFinish={() => dispatch(attemptLogin(form.getFieldValue('username'), form.getFieldValue('password')))}
         form={form}
       >
@@ -66,8 +66,6 @@ export default function SignInModal(props: Props) {
         </Form.Item>
 
         <Form.Item
-          // help={loginError ? 'Username or password are incorrect.' : ''}
-          // validateStatus={loginError ? 'error' : ''}
           label="Password"
           name="password"
           rules={[
