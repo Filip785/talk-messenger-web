@@ -1,7 +1,6 @@
 import { RootState, AppThunk } from "../../app/store";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "../../models/User";
-import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 
 const authUser = JSON.parse(localStorage.getItem('authUser')!);
@@ -16,14 +15,6 @@ interface AuthState {
   registerError: boolean
 }
 
-let id = localStorage.getItem('userId');
-
-if (!id) {
-  let generatedId = uuidv4();
-  localStorage.setItem('userId', generatedId);
-  id = generatedId
-}
-
 const initialState: AuthState = {
   user: authUser ? {
     loggedIn: { status: true, fromAuth: false },
@@ -35,11 +26,6 @@ const initialState: AuthState = {
   registered: false,
   loginError: false,
   registerError: false
-  // authUser: {
-  //   id: id,
-  //   username: 'Filip Djuricic',
-  //   avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-  // }
 };
 
 export const authSlice = createSlice({
@@ -70,8 +56,9 @@ export const authSlice = createSlice({
     signOutReduce(state) {
       state.user = {
         loggedIn: { status: false, fromAuth: false },
-        authUser: { id: '', username: '', avatar: '', api_token: '' }
-      }
+        authUser: { id: 0, username: '', avatar: '', api_token: '' }
+      };
+      state.registered = false;
     }
   },
 });
