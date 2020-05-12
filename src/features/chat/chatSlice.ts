@@ -65,53 +65,19 @@ interface ChatState {
   friends: FriendConversation[];
   currentConversationId: number;
   currentReceiverId: number;
+  friendsFetched: boolean;
 }
 
 const initialState: ChatState = {
   value: 0,
   requests: {count: 0, friendRequests: [], didInit: false},
-  messages: [
-    // {
-    //   id: 3,
-    //   sendingUser: {
-    //     id: 'f121e64a-4af6-4275-8b47-ca78cb1aca5d',
-    //     username: 'Filip Djuricic',
-    //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-    //   },
-    //   content: 'Hi Han Solo'
-    // },
-    // {
-    //   id: 25,
-    //   sendingUser: {
-    //     id: 'f121e64a-4af6-4275-8b47-ca78cb1aca5d',
-    //     username: 'Filip Djuricic',
-    //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-    //   },
-    //   content: 'Let me know if you would like to know more about our business.'
-    // },
-    // {
-    //   id: 4,
-    //   sendingUser: {
-    //     id: '5eae8fa4-8f18-44f9-b6c5-baeb41ca0aa0',
-    //     username: 'Han Solo',
-    //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-    //   },
-    //   content: 'Hi Filip, please give me short description about your business.'
-    // },{
-    //   id: 5,
-    //   sendingUser: {
-    //     id: 'f121e64a-4af6-4275-8b47-ca78cb1aca5d',
-    //     username: 'Filip Djuricic',
-    //     avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-    //   },
-    //   content: 'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.'
-    // }
-  ],
+  messages: [],
   possibleFriends: [],
   friendAdded: false,
   friends: [],
   currentConversationId: 0,
-  currentReceiverId: 0
+  currentReceiverId: 0,
+  friendsFetched: false
 };
 
 export const chatSlice = createSlice({
@@ -136,6 +102,7 @@ export const chatSlice = createSlice({
     acceptFriendReduce(state, action: PayloadAction<FriendRequestResponse>) {
       state.requests.count = state.requests.count - 1;
       state.requests.friendRequests = state.requests.friendRequests.filter(item => item.User1.id !== action.payload.addingId);
+      // TO FIX!
       //state.friends = [ ...state.friends, action.payload! ];
     },
     denyFriendReduce(state, action: PayloadAction<FriendRequestResponse>) {
@@ -144,6 +111,7 @@ export const chatSlice = createSlice({
     },
     getFriendsReduce(state, action: PayloadAction<FriendConversation[]>) {
       state.friends = action.payload;
+      state.friendsFetched = true;
     },
     signOutCleanupChat(state) {
       state.friends = [];
@@ -155,6 +123,7 @@ export const chatSlice = createSlice({
       };
       state.possibleFriends = [];
       state.messages = [];
+      state.friendsFetched = false;
     },
     updateMessagesReduce(state, action: PayloadAction<{messages: ConversationMessage[], currentConversationId: number, receiverId: number}>) {
       state.messages = action.payload.messages;
@@ -241,7 +210,6 @@ export const getFriends = (currentUserId: number): AppThunk => async dispatch =>
 };
 
 export const selectFriend = (conversationId: number, receiverId: number): AppThunk => async dispatch => {
-  console.log('conversationId', conversationId);
   try {
     // fetch messages
     const response = await axios.get<ConversationMessage[]>('http://localhost:5000/api/users/select-friend', {
@@ -263,5 +231,6 @@ export const selectFriendAdded = (state: RootState) => state.chat.friendAdded;
 export const selectFriends = (state: RootState) => state.chat.friends;
 export const selectConversationId = (state: RootState) => state.chat.currentConversationId;
 export const selectReceiverId = (state: RootState) => state.chat.currentReceiverId;
+export const selectFriendsFetched = (state: RootState) => state.chat.friendsFetched;
 
 export default chatSlice.reducer;

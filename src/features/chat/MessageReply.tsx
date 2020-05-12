@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Comment, Avatar, Button, Form, Input } from 'antd';
 import { selectAuthUser } from '../auth/authSlice';
-import { Message, selectReceiverId } from './chatSlice';
+import { selectReceiverId, selectConversationId } from './chatSlice';
 
 const { TextArea } = Input;
 
 interface Props {
   socket: SocketIOClient.Socket;
-  conversationId: number;
 }
 
 const MessageReply = (props: Props) => {
+  const conversationId = useSelector(selectConversationId);
   const authUser = useSelector(selectAuthUser);
   const receiverId = useSelector(selectReceiverId);
   const [message, setMessage] = useState('');
-  const dispatch = useDispatch();
 
   return (
     <div className="reply-section">
@@ -36,10 +35,9 @@ const MessageReply = (props: Props) => {
                 props.socket.emit('message-sent', {
                   senderId: authUser.id!,
                   receiverId: receiverId,
-                  conversationId: props.conversationId,
+                  conversationId,
                   message,
                 });
-                //dispatch(addMessage(messageSend));
                 setMessage('');
               }}>
                 Send Message

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { List, Avatar, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFriends, getFriends, selectFriend, FriendConversation } from './chatSlice';
+import { selectFriends, getFriends, selectFriend, FriendConversation, selectFriendsFetched } from './chatSlice';
 import { selectAuthUser } from '../auth/authSlice';
 import { User } from '../../models/User';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -43,10 +43,19 @@ export default function FriendsSidebar() {
   const dispatch = useDispatch();
   const authUser = useSelector(selectAuthUser);
   const friends = useSelector(selectFriends);
+  const friendsFetched = useSelector(selectFriendsFetched);
 
   useEffect(() => {
-    dispatch(getFriends(authUser.id!));
-  }, [dispatch, authUser.id]);
+    if(!friendsFetched) {
+      dispatch(getFriends(authUser.id!));
+    }
+    
+    if(friendsFetched && friends.length > 0) {
+      dispatch(selectFriend(friends[0].conversationId, friends[0].friend.id));
+    }
+  }, [dispatch, authUser.id, friendsFetched, friends]);
+
+  console.log('render sidebar');
 
   return (
     <>

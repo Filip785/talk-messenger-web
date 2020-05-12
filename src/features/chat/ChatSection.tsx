@@ -4,7 +4,7 @@ import Messages from './Messages';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthUser, signOutReduce } from '../auth/authSlice';
 import { User } from '../../models/User';
-import { selectConversationId, selectFriendRequests, getFriendRequests, Requests, selectFriendAdded, acceptFriend, denyFriend, signOutCleanupChat, ConversationMessage, addMessageReduce } from './chatSlice';
+import { selectFriendRequests, getFriendRequests, Requests, selectFriendAdded, acceptFriend, denyFriend, signOutCleanupChat, ConversationMessage, addMessageReduce } from './chatSlice';
 import socketIOClient from 'socket.io-client';
 import MessageReply from './MessageReply';
 import { Button, Badge, Popover, Avatar, Alert } from 'antd';
@@ -43,7 +43,6 @@ export default function ChatSection() {
   const authUser: User = useSelector(selectAuthUser)!;
   const requests = useSelector(selectFriendRequests);
   const friendAdded = useSelector(selectFriendAdded);
-  const conversationId = useSelector(selectConversationId);
 
   const [visibleAddFriendModal, setVisibleAddFriendModal] = useState(false);
 
@@ -62,6 +61,8 @@ export default function ChatSection() {
       setVisibleAddFriendModal(false);
     }
   }, [dispatch, friendAdded, requests, authUser.id]);
+
+  console.log('render chatsection');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -83,6 +84,7 @@ export default function ChatSection() {
             localStorage.removeItem('authUser');
             dispatch(signOutReduce());
             dispatch(signOutCleanupChat());
+            socket.removeAllListeners();
             history.push('/auth');
           }}>Sign out</Button>
         </div>
@@ -92,7 +94,7 @@ export default function ChatSection() {
         <div className="chat-section">
           <Messages />
 
-          <MessageReply socket={socket} conversationId={conversationId} />
+          <MessageReply socket={socket} />
         </div>
       </div>
 
