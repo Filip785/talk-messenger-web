@@ -10,7 +10,7 @@ interface Props {
   socket: SocketIOClient.Socket;
 }
 
-const MessageReply = (props: Props) => {
+export default function MessageReply(props: Props) {
   const conversationId = useSelector(selectConversationId);
   const authUser = useSelector(selectAuthUser);
   const receiverId = useSelector(selectReceiverId);
@@ -48,7 +48,4 @@ const MessageReply = (props: Props) => {
       />
     </div>
   );
-
 };
-
-export default MessageReply;

@@ -46,6 +46,7 @@ export interface Friend {
 export interface FriendConversation {
   conversationId: number;
   friend: Friend;
+  active: boolean;
 }
 
 export interface ConversationMessage {
@@ -66,6 +67,7 @@ interface ChatState {
   currentConversationId: number;
   currentReceiverId: number;
   friendsFetched: boolean;
+  initMessages: boolean;
 }
 
 const initialState: ChatState = {
@@ -77,7 +79,8 @@ const initialState: ChatState = {
   friends: [],
   currentConversationId: 0,
   currentReceiverId: 0,
-  friendsFetched: false
+  friendsFetched: false,
+  initMessages: false
 };
 
 export const chatSlice = createSlice({
@@ -113,6 +116,27 @@ export const chatSlice = createSlice({
       state.friends = action.payload;
       state.friendsFetched = true;
     },
+    updateMessagesReduce(state, action: PayloadAction<{messages: ConversationMessage[], currentConversationId: number, receiverId: number, initMessages: boolean}>) {
+      state.messages = action.payload.messages;
+      state.currentConversationId = action.payload.currentConversationId;
+      state.currentReceiverId = action.payload.receiverId;
+      if(!state.initMessages) {
+        state.initMessages = true;
+      }
+      state.friends = state.friends.map((item, index) => {
+        if (item.conversationId !== action.payload.currentConversationId) {
+          return {
+            ...item,
+            active: false
+          };
+        }
+
+        return {
+          ...item,
+          active: true
+        };
+      });
+    },
     signOutCleanupChat(state) {
       state.friends = [];
       state.friendAdded = false;
@@ -123,13 +147,10 @@ export const chatSlice = createSlice({
       };
       state.possibleFriends = [];
       state.messages = [];
+      
       state.friendsFetched = false;
+      state.initMessages = false;
     },
-    updateMessagesReduce(state, action: PayloadAction<{messages: ConversationMessage[], currentConversationId: number, receiverId: number}>) {
-      state.messages = action.payload.messages;
-      state.currentConversationId = action.payload.currentConversationId;
-      state.currentReceiverId = action.payload.receiverId;
-    }
   },
 });
 
@@ -139,7 +160,7 @@ const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acce
 
 export const getPossibleFriends = (id: number): AppThunk => async dispatch => {
   try {
-    const response = await axios.get('http://localhost:5000/api/users/possible_friends', {
+    const response = await axios.get('http://localhost:5000/api/friends/possible-friends', {
       params: {
         currentUserId: id
       }
@@ -153,7 +174,7 @@ export const getPossibleFriends = (id: number): AppThunk => async dispatch => {
 
 export const getFriendRequests = (id: number): AppThunk => async dispatch => {
   try {
-    const response = await axios.get('http://localhost:5000/api/users/friend_requests', {
+    const response = await axios.get('http://localhost:5000/api/friends/friend-requests', {
       params: {
         currentUserId: id
       }
@@ -167,7 +188,7 @@ export const getFriendRequests = (id: number): AppThunk => async dispatch => {
 
 export const addFriend = (addingId: number, friendId: number): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/users/add_friend', { addFriendData: { addingId, friendId } });
+    await axios.post('http://localhost:5000/api/friends/add-friend', { addFriendData: { addingId, friendId } });
 
     dispatch(addFriendReduce());
   } catch (err) {
@@ -177,7 +198,7 @@ export const addFriend = (addingId: number, friendId: number): AppThunk => async
 
 export const acceptFriend = (addingId: number, friendId: number, friend: FriendRequestUser): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/users/accept_friend', { addFriendData: { addingId, friendId } });
+    await axios.post('http://localhost:5000/api/friends/accept-friend', { addFriendData: { addingId, friendId } });
 
     dispatch(acceptFriendReduce({ addingId, friend }));
   } catch (err) {
@@ -187,7 +208,7 @@ export const acceptFriend = (addingId: number, friendId: number, friend: FriendR
 
 export const denyFriend = (addingId: number, friendId: number): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/users/deny_friend', { addFriendData: { addingId, friendId } });
+    await axios.post('http://localhost:5000/api/friends/deny-friend', { addFriendData: { addingId, friendId } });
 
   dispatch(denyFriendReduce({ addingId }));
   } catch (err) {
@@ -197,7 +218,7 @@ export const denyFriend = (addingId: number, friendId: number): AppThunk => asyn
 
 export const getFriends = (currentUserId: number): AppThunk => async dispatch => {
   try {
-    const response = await axios.get('http://localhost:5000/api/users/get-friends', {
+    const response = await axios.get('http://localhost:5000/api/friends/get-friends', {
       params: {
         currentUserId
       }
@@ -209,16 +230,15 @@ export const getFriends = (currentUserId: number): AppThunk => async dispatch =>
   }
 };
 
-export const selectFriend = (conversationId: number, receiverId: number): AppThunk => async dispatch => {
+export const selectFriend = (conversationId: number, receiverId: number, initMessages: boolean): AppThunk => async dispatch => {
   try {
-    // fetch messages
-    const response = await axios.get<ConversationMessage[]>('http://localhost:5000/api/users/select-friend', {
+    const response = await axios.get<ConversationMessage[]>('http://localhost:5000/api/friends/select-friend', {
       params: {
         conversationId
       }
     });
 
-    dispatch(updateMessagesReduce({messages: response.data, currentConversationId: conversationId, receiverId}));
+    dispatch(updateMessagesReduce({messages: response.data, currentConversationId: conversationId, receiverId, initMessages}));
   } catch (err) {
     console.log('Select friend error', err);
   }
@@ -232,5 +252,6 @@ export const selectFriends = (state: RootState) => state.chat.friends;
 export const selectConversationId = (state: RootState) => state.chat.currentConversationId;
 export const selectReceiverId = (state: RootState) => state.chat.currentReceiverId;
 export const selectFriendsFetched = (state: RootState) => state.chat.friendsFetched;
+export const selectInitMessages = (state: RootState) => state.chat.initMessages;
 
 export default chatSlice.reducer;

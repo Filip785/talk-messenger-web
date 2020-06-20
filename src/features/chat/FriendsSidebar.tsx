@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { List, Avatar, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFriends, getFriends, selectFriend, FriendConversation, selectFriendsFetched } from './chatSlice';
+import { selectFriends, getFriends, selectFriend, FriendConversation, selectFriendsFetched, selectInitMessages } from './chatSlice';
 import { selectAuthUser } from '../auth/authSlice';
 import { User } from '../../models/User';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -14,9 +14,10 @@ interface FriendsListProps {
 
 const FriendsList = (props: FriendsListProps) => (
   <List
+    className="friends-sidebar"
     dataSource={props.friends}
     renderItem={item => (
-      <List.Item key={item.friend.id} onClick={() => props.dispatch(selectFriend(item.conversationId, item.friend.id))}>
+      <List.Item key={item.friend.id} onClick={() => props.dispatch(selectFriend(item.conversationId, item.friend.id, false))} className={item.active ? 'active' : ''}>
         <List.Item.Meta
           avatar={
             <Avatar src={item.friend.avatar} />
@@ -44,18 +45,18 @@ export default function FriendsSidebar() {
   const authUser = useSelector(selectAuthUser);
   const friends = useSelector(selectFriends);
   const friendsFetched = useSelector(selectFriendsFetched);
+  const initMessages = useSelector(selectInitMessages);
 
   useEffect(() => {
     if(!friendsFetched) {
       dispatch(getFriends(authUser.id!));
     }
     
-    if(friendsFetched && friends.length > 0) {
-      dispatch(selectFriend(friends[0].conversationId, friends[0].friend.id));
+    // fetch the initial conversation after logging in
+    if(friendsFetched && !initMessages && friends.length > 0) {
+      dispatch(selectFriend(friends[0].conversationId, friends[0].friend.id, true));
     }
-  }, [dispatch, authUser.id, friendsFetched, friends]);
-
-  console.log('render sidebar');
+  }, [dispatch, authUser.id, friendsFetched, friends, initMessages]);
 
   return (
     <>

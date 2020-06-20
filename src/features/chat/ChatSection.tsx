@@ -62,8 +62,6 @@ export default function ChatSection() {
     }
   }, [dispatch, friendAdded, requests, authUser.id]);
 
-  console.log('render chatsection');
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
       <div className="titlebar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid rgba(0, 0, 0, .10)' }}>
