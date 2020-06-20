@@ -75,7 +75,7 @@ export default function SignUpModal(props: Props) {
             },
           ]}
         >
-          <Input.Password style={{ width: '386px', marginLeft: '4px' }} />
+          <Input.Password style={{ width: '384px', marginLeft: '3px' }} />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 17 }}>

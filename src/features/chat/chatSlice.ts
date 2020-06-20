@@ -68,6 +68,7 @@ interface ChatState {
   currentReceiverId: number;
   friendsFetched: boolean;
   initMessages: boolean;
+  hasFriends: boolean;
 }
 
 const initialState: ChatState = {
@@ -80,7 +81,8 @@ const initialState: ChatState = {
   currentConversationId: 0,
   currentReceiverId: 0,
   friendsFetched: false,
-  initMessages: false
+  initMessages: false,
+  hasFriends: false
 };
 
 export const chatSlice = createSlice({
@@ -115,6 +117,7 @@ export const chatSlice = createSlice({
     getFriendsReduce(state, action: PayloadAction<FriendConversation[]>) {
       state.friends = action.payload;
       state.friendsFetched = true;
+      state.hasFriends = state.friends.length > 0;
     },
     updateMessagesReduce(state, action: PayloadAction<{messages: ConversationMessage[], currentConversationId: number, receiverId: number, initMessages: boolean}>) {
       state.messages = action.payload.messages;
@@ -252,6 +255,7 @@ export const selectFriends = (state: RootState) => state.chat.friends;
 export const selectConversationId = (state: RootState) => state.chat.currentConversationId;
 export const selectReceiverId = (state: RootState) => state.chat.currentReceiverId;
 export const selectFriendsFetched = (state: RootState) => state.chat.friendsFetched;
+export const selectHasFriends = (state: RootState) => state.chat.hasFriends;
 export const selectInitMessages = (state: RootState) => state.chat.initMessages;
 
 export default chatSlice.reducer;

@@ -76,7 +76,7 @@ export default function SignInModal(props: Props) {
           ]}
           
         >
-          <Input.Password style={{ width: '386px', marginLeft: '4px' }} onChange={() => {
+          <Input.Password style={{ width: '384px', marginLeft: '3px' }} onChange={() => {
             if(loginError) {
               dispatch(attemptLoginFailureEnd());
             }

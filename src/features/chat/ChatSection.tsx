@@ -1,66 +1,35 @@
-import React, { useEffect, useState, Dispatch } from 'react';
+import React, { useEffect, useState } from 'react';
 import FriendsSidebar from './FriendsSidebar';
 import Messages from './Messages';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectAuthUser, signOutReduce } from '../auth/authSlice';
 import { User } from '../../models/User';
-import { selectFriendRequests, getFriendRequests, Requests, selectFriendAdded, acceptFriend, denyFriend, signOutCleanupChat, ConversationMessage, addMessageReduce } from './chatSlice';
+import { selectFriendAdded, signOutCleanupChat, selectFriendsFetched, selectHasFriends } from './chatSlice';
 import socketIOClient from 'socket.io-client';
 import MessageReply from './MessageReply';
-import { Button, Badge, Popover, Avatar, Alert } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Button, Alert } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import history from '../../shared/history';
 import AddFriendModal from './AddFriendModal';
+import FriendRequests from './FriendRequests';
 
 const socket = socketIOClient('http://localhost:5000');
 
-interface FriendRequestsProps {
-  requests: Requests;
-  dispatch: Dispatch<any>;
-  authUserId: number;
-}
-
-function FriendRequestsContent(props: FriendRequestsProps) {
-  return (
-    <div style={{ display: 'flex', width: 350, flexDirection: 'column' }}  className="friendRequestList">
-      {props.requests.friendRequests.map(request => (
-        <div className="friendRequest" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }} key={request.id}>
-          <div className="avatar-name" style={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar src={request.User1.avatar} />
-            <span>{request.User1.username} added you</span>
-          </div>
-          <div className="accept-deny-btns">
-            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(acceptFriend(request.User1.id, props.authUserId, request.User1))} style={{ marginRight: 16 }}>Accept</Button>
-            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(denyFriend(request.User1.id, props.authUserId))}>Deny</Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function ChatSection() {
   const authUser: User = useSelector(selectAuthUser)!;
-  const requests = useSelector(selectFriendRequests);
-  const friendAdded = useSelector(selectFriendAdded);
 
+  const friendsFetched = useSelector(selectFriendsFetched);
+  const hasFriends = useSelector(selectHasFriends);
+  const friendAdded = useSelector(selectFriendAdded);
   const [visibleAddFriendModal, setVisibleAddFriendModal] = useState(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(!requests.didInit) {
-      socket.on('message-received', (receivedMessage: ConversationMessage) => {
-        dispatch(addMessageReduce(receivedMessage));
-      });
-
-      dispatch(getFriendRequests(authUser.id!));
-    }
-
     if(friendAdded) {
       setVisibleAddFriendModal(false);
     }
-  }, [dispatch, friendAdded, requests, authUser.id]);
+  }, [dispatch, friendAdded]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -69,11 +38,7 @@ export default function ChatSection() {
 
         <div className="titlebar-buttons" style={{ display: 'flex' }}>
           <div style={{ marginRight: '20px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-            <Popover content={requests.count === 0 ? (<h1>No content</h1>) : <FriendRequestsContent requests={requests} dispatch={dispatch} authUserId={authUser.id!} />} title="Current Friend Requests" trigger="click">
-              <Badge count={requests.count}>
-                <UserOutlined style={{ fontSize: 32 }} />
-              </Badge>
-            </Popover>
+            <FriendRequests socket={socket} />
           </div>
 
           <Button htmlType="submit" type="primary" size="large" onClick={() => setVisibleAddFriendModal(true)} style={{ marginRight: '20px' }}>Add Friend</Button>
@@ -90,9 +55,19 @@ export default function ChatSection() {
       <div className="main-chat-section" style={{ display: 'flex', height: '100%' }}>
         <FriendsSidebar />
         <div className="chat-section">
-          <Messages />
+          { !friendsFetched && <LoadingOutlined style={{ fontSize: 200 }} />}
+          
+          { (friendsFetched && !hasFriends) && (
+            <h1 style={{marginLeft: 25, marginTop: 25}}>No friends. Add new friend by pressing button above.</h1> 
+          )}
+          
+          { (friendsFetched && hasFriends) && (
+            <>
+              <Messages />
 
-          <MessageReply socket={socket} />
+              <MessageReply socket={socket} />
+            </>
+          )}
         </div>
       </div>
 
