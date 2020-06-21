@@ -26,9 +26,16 @@ const FriendsList = (props: FriendsListProps) => (
               <Avatar src={item.friend.avatar} />
             }
             title={item.friend.username}
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget dolor nunc. In eu pulvinar velit. Nullam molestie id nunc vel facilisis. Mauris sed odio id turpis interdum vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent et varius nisl."
+            description={item.lastMessage ? item.lastMessage.message : 'No messages'}
           />
-          <div>Content</div>
+          <div>
+            <div style={{textAlign: 'center'}}>
+              {item.lastMessage ? item.lastMessage.createdAtTime : ''}
+            </div>
+            <div>
+              {item.lastMessage ? item.lastMessage.createdAt : ''}
+            </div>
+          </div>
         </List.Item>
       </Link>
     )}></List>
@@ -63,7 +70,7 @@ export default function FriendsSidebar() {
       }
     }
   }, [dispatch, authUser.id, friendsFetched, friends, initMessages]);
-
+  
   return (
     <>
       {friends.length > 0 ? <FriendsList friends={friends} authUser={authUser} dispatch={dispatch} /> : <FriendsListSkeleton />}

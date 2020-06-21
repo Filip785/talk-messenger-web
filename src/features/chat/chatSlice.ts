@@ -46,6 +46,7 @@ export interface Friend {
 export interface FriendConversation {
   conversationId: number;
   friend: Friend;
+  lastMessage: { message: string, createdAtTime: string, createdAt: string };
   active: boolean;
 }
 
@@ -53,6 +54,8 @@ export interface ConversationMessage {
   id: number;
   conversationId: number;
   message: string;
+  createdAtTime: string;
+  createdAt: string;
   Sender: User;
   Receiver: User;
 }
@@ -91,6 +94,17 @@ export const chatSlice = createSlice({
   reducers: {
     addMessageReduce(state, action: PayloadAction<ConversationMessage>) {
       state.messages = { ...state.messages, items: [ ...state.messages.items, action.payload ] };
+      state.friends = state.friends.map(
+        item => item.conversationId === action.payload.conversationId ? 
+                item = { 
+                  ...item, 
+                  lastMessage: { 
+                    message: action.payload.message, 
+                    createdAtTime: action.payload.createdAtTime, 
+                    createdAt: action.payload.createdAt 
+                  } 
+                } : item
+      );
     },
     getFriendRequestsReduce(state, action: PayloadAction<Requests>) {
       state.requests = {
@@ -126,7 +140,8 @@ export const chatSlice = createSlice({
       if(!state.initMessages) {
         state.initMessages = true;
       }
-      state.friends = state.friends.map((item, index) => {
+
+      state.friends = state.friends.map(item => {
         if (item.conversationId !== action.payload.currentConversationId) {
           return {
             ...item,

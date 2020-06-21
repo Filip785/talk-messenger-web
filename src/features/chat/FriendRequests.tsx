@@ -35,7 +35,7 @@ function FriendRequestsContent(props: FriendRequestsProps) {
   );
 }
 
-export default function FriendRequests(props: Props) {
+const FriendRequests = React.memo((props: Props) => {
   const authUser: User = useSelector(selectAuthUser)!;
   const requests = useSelector(selectFriendRequests);
   const dispatch = useDispatch();
@@ -57,4 +57,6 @@ export default function FriendRequests(props: Props) {
       </Badge>
     </Popover>
   );
-}
+});
+
+export default FriendRequests;
