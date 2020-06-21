@@ -59,7 +59,7 @@ export interface ConversationMessage {
 
 interface ChatState {
   value: number;
-  messages: ConversationMessage[];
+  messages: { items: ConversationMessage[], fetchDone: boolean };
   requests: Requests;
   possibleFriends: UserList[];
   friendAdded: boolean;
@@ -74,7 +74,7 @@ interface ChatState {
 const initialState: ChatState = {
   value: 0,
   requests: {count: 0, friendRequests: [], didInit: false},
-  messages: [],
+  messages: { items: [], fetchDone: false },
   possibleFriends: [],
   friendAdded: false,
   friends: [],
@@ -90,7 +90,7 @@ export const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessageReduce(state, action: PayloadAction<ConversationMessage>) {
-      state.messages = [ ...state.messages, action.payload ];
+      state.messages = { ...state.messages, items: [ ...state.messages.items, action.payload ] };
     },
     getFriendRequestsReduce(state, action: PayloadAction<Requests>) {
       state.requests = {
@@ -120,7 +120,7 @@ export const chatSlice = createSlice({
       state.hasFriends = state.friends.length > 0;
     },
     updateMessagesReduce(state, action: PayloadAction<{messages: ConversationMessage[], currentConversationId: number, receiverId: number, initMessages: boolean}>) {
-      state.messages = action.payload.messages;
+      state.messages = { items: action.payload.messages, fetchDone: true };
       state.currentConversationId = action.payload.currentConversationId;
       state.currentReceiverId = action.payload.receiverId;
       if(!state.initMessages) {
@@ -149,7 +149,7 @@ export const chatSlice = createSlice({
         didInit: false
       };
       state.possibleFriends = [];
-      state.messages = [];
+      state.messages = { items: [], fetchDone: false };
       
       state.friendsFetched = false;
       state.initMessages = false;
@@ -233,15 +233,19 @@ export const getFriends = (currentUserId: number): AppThunk => async dispatch =>
   }
 };
 
-export const selectFriend = (conversationId: number, receiverId: number, initMessages: boolean): AppThunk => async dispatch => {
+export const selectFriend = (authUserId: number, receiverId: number, initMessages: boolean): AppThunk => async dispatch => {
   try {
-    const response = await axios.get<ConversationMessage[]>('http://localhost:5000/api/friends/select-friend', {
+    const response = await axios.get<{
+      items: ConversationMessage[],
+      conversationId: number
+    }>('http://localhost:5000/api/friends/select-friend', {
       params: {
-        conversationId
+        authUserId,
+        receiverId
       }
     });
 
-    dispatch(updateMessagesReduce({messages: response.data, currentConversationId: conversationId, receiverId, initMessages}));
+    dispatch(updateMessagesReduce({messages: response.data.items, currentConversationId: response.data.conversationId, receiverId, initMessages}));
   } catch (err) {
     console.log('Select friend error', err);
   }

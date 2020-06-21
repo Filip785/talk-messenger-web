@@ -12,6 +12,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import history from '../../shared/history';
 import AddFriendModal from './AddFriendModal';
 import FriendRequests from './FriendRequests';
+import { Route, Switch } from 'react-router';
 
 const socket = socketIOClient('http://localhost:5000');
 
@@ -63,8 +64,12 @@ export default function ChatSection() {
           
           { (friendsFetched && hasFriends) && (
             <>
-              <Messages />
-
+              <Switch>
+                <Route path='/c/:id'>
+                  <Messages />
+                </Route>
+              </Switch>
+              
               <MessageReply socket={socket} />
             </>
           )}

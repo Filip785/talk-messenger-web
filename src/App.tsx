@@ -20,9 +20,10 @@ function App() {
           <Route path="/auth">
             <PublicRoute loggedIn={loggedIn} component={Authentication} path='/auth' />
           </Route>
-          <Route path="/" exact>
-            <PrivateRoute loggedIn={loggedIn} component={ChatSection} path='/' exact />
+          <Route path="/">
+            <PrivateRoute loggedIn={loggedIn} component={ChatSection} path='/' />
           </Route>
+          <Route component={() => <h1>404!</h1>} />
         </Switch>
       </Router>
     </div>

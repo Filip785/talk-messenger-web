@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { List, Avatar, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFriends, getFriends, selectFriend, FriendConversation, selectFriendsFetched, selectInitMessages } from './chatSlice';
+import { selectFriends, getFriends, FriendConversation, selectFriendsFetched, selectInitMessages } from './chatSlice';
 import { selectAuthUser } from '../auth/authSlice';
 import { User } from '../../models/User';
 import { Dispatch } from '@reduxjs/toolkit';
+import { Link } from 'react-router-dom';
+import history from '../../shared/history';
 
 interface FriendsListProps {
   friends: FriendConversation[];
@@ -17,16 +19,18 @@ const FriendsList = (props: FriendsListProps) => (
     className="friends-sidebar"
     dataSource={props.friends}
     renderItem={item => (
-      <List.Item key={item.friend.id} onClick={() => props.dispatch(selectFriend(item.conversationId, item.friend.id, false))} className={item.active ? 'active' : ''}>
-        <List.Item.Meta
-          avatar={
-            <Avatar src={item.friend.avatar} />
-          }
-          title={<a href="https://ant.design">{item.friend.username}</a>}
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget dolor nunc. In eu pulvinar velit. Nullam molestie id nunc vel facilisis. Mauris sed odio id turpis interdum vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent et varius nisl."
-        />
-        <div>Content</div>
-      </List.Item>
+      <Link to={`/c/${item.friend.id}`}>
+        <List.Item key={item.friend.id} className={item.active ? 'active' : ''}>
+          <List.Item.Meta
+            avatar={
+              <Avatar src={item.friend.avatar} />
+            }
+            title={item.friend.username}
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eget dolor nunc. In eu pulvinar velit. Nullam molestie id nunc vel facilisis. Mauris sed odio id turpis interdum vulputate. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent et varius nisl."
+          />
+          <div>Content</div>
+        </List.Item>
+      </Link>
     )}></List>
 );
 
@@ -54,7 +58,9 @@ export default function FriendsSidebar() {
     
     // fetch the initial conversation after logging in
     if(friendsFetched && !initMessages && friends.length > 0) {
-      dispatch(selectFriend(friends[0].conversationId, friends[0].friend.id, true));
+      if(history.location.pathname !== `/c/${friends[0].friend.id}`) {
+        history.push(`/c/${friends[0].friend.id}`);
+      }
     }
   }, [dispatch, authUser.id, friendsFetched, friends, initMessages]);
 

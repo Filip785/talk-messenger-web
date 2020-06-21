@@ -34,7 +34,7 @@ export default function MessageReply(props: Props) {
               <Button htmlType="submit" type="primary" onClick={() => {
                 props.socket.emit('message-sent', {
                   senderId: authUser.id!,
-                  receiverId: receiverId,
+                  receiverId,
                   conversationId,
                   message,
                 });
