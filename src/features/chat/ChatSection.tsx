@@ -33,8 +33,8 @@ export default function ChatSection() {
   }, [dispatch, friendAdded]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      <div className="titlebar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', borderBottom: '1px solid rgba(0, 0, 0, .10)' }}>
+    <>
+      <div className="titlebar">
         <h1 style={{ margin: 0 }}>Welcome, {authUser.username}</h1>
 
         <div className="titlebar-buttons" style={{ display: 'flex' }}>
@@ -53,7 +53,7 @@ export default function ChatSection() {
           }}>Sign out</Button>
         </div>
       </div>
-      <div className="main-chat-section" style={{ display: 'flex', height: '100%' }}>
+      <div className="main-chat-section">
         <FriendsSidebar />
         <div className="chat-section">
           { !friendsFetched && <LoadingOutlined style={{ fontSize: 200 }} />}
@@ -78,6 +78,6 @@ export default function ChatSection() {
 
       <AddFriendModal visible={visibleAddFriendModal} closeAddFriendModal={setVisibleAddFriendModal} />
       {friendAdded && <Alert message="User successfully added." type="success" closable />}
-    </div>
+    </>
   );
 }

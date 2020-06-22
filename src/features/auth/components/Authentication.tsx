@@ -20,7 +20,7 @@ export default function Authentication() {
   }, [registered]);
 
   return (
-    <>
+    <div className="auth-wrapper">
       <Row align="middle" justify="center" style={{width: '100%'}}>
         <Col>
           <h1>Sign in if you have an account, otherwise sign up for the new one instead</h1>
@@ -33,6 +33,6 @@ export default function Authentication() {
 
       <SignInModal visible={visibleSignInModal} closeSignInModal={setVisibleSignInModal} hasRegistered={registered} />
       <SignUpModal visible={visibleSignUpModal} closeSignUpModal={setVisibleSignUpModal} />
-    </>
+    </div>
   );
 }

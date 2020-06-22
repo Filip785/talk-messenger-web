@@ -42,12 +42,29 @@ html {
   overflow-y: hidden;
 }
 
-html, body, #root, .App, .ant-list, .ant-spin-nested-loading, .ant-spin-container, .ant-list-items {
+html, body, #root, .App {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.main-chat-section {
+  display: flex;
+  height: calc(100% - 70px);
+}
+
+.auth-wrapper {
+  display: flex;
   height: 100%;
 }
 
-.App {
+.titlebar {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px !important;
+  height: 70px;
+  border-bottom: 1px solid rgba(0, 0, 0, .10);
 }
 
 .ant-list-item {
@@ -63,6 +80,7 @@ html, body, #root, .App, .ant-list, .ant-spin-nested-loading, .ant-spin-containe
   width: 75%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   position: relative;
 }
 
@@ -109,7 +127,7 @@ html, body, #root, .App, .ant-list, .ant-spin-nested-loading, .ant-spin-containe
 
 .messages {
   overflow-y: auto;
-  height: 70%;
+  height: 80%;
 }
 
 .messages .ant-comment:last-child {
@@ -118,10 +136,6 @@ html, body, #root, .App, .ant-list, .ant-spin-nested-loading, .ant-spin-containe
 
 .messages .message-current .ant-comment-inner, .messages .message-friend .ant-comment-inner {
   width: 40%;
-}
-
-.reply-section {
-  height: 30%;
 }
 
 .messages .message-current {
