@@ -13,15 +13,17 @@ export default function Messages() {
   const authUser: User = useSelector(selectAuthUser);
 
   useEffect(() => {
-    dispatch(selectFriend(authUser.id!, Number(params.id), false));
-  }, [dispatch, authUser.id, params.id]);
+    if(!messages.fetchDone) {
+      dispatch(selectFriend(authUser.id!, Number(params.id), false));
+    }
+  }, [dispatch, authUser.id, params.id, messages.fetchDone]);
 
   return (
     <>
       {messages.fetchDone && <div className="messages">
         {messages.items.map(message => <Comment
           key={message.id}
-          className={authUser.id === message.Sender.id ? 'message-current' : 'message-friend'}
+          className={message.is_system ? 'message-system' : authUser.id === message.Sender.id ? 'message-current' : 'message-friend'}
           author={<a href={`/profile/${message.Sender.id!}`}>{message.Sender.username}</a>}
           avatar={
             <Avatar

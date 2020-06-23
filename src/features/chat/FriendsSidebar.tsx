@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { List, Avatar, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectFriends, getFriends, FriendConversation, selectFriendsFetched, selectInitMessages } from './chatSlice';
+import { selectFriends, getFriends, FriendConversation, selectFriendsFetched, selectInitMessages, resetMessages } from './chatSlice';
 import { selectAuthUser } from '../auth/authSlice';
 import { User } from '../../models/User';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -65,6 +65,11 @@ export default function FriendsSidebar() {
     
     // fetch the initial conversation after logging in
     if(friendsFetched && !initMessages && friends.length > 0) {
+      // to move
+      history.listen((_location, _action) => {
+        dispatch(resetMessages());
+      });
+
       if(history.location.pathname !== `/c/${friends[0].friend.id}`) {
         history.push(`/c/${friends[0].friend.id}`);
       }

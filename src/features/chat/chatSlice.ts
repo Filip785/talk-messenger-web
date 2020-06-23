@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
 import { User } from '../../models/User';
 import axios from 'axios';
+import { createInitialConversationMessage } from '../../shared/message-helper';
 
 export interface Message {
   id: number;
@@ -10,15 +11,15 @@ export interface Message {
   is_system: boolean;
 }
 
-interface FriendRequestUser {
-  id: number;
-  username: string;
-  avatar: string;
-}
+// interface FriendRequestUser {
+//   id: number;
+//   username: string;
+//   avatar: string;
+// }
 
 interface FriendRequest {
   id: number;
-  User1: FriendRequestUser;
+  User1: Friend;
 }
 
 export interface Requests {
@@ -34,7 +35,8 @@ interface UserList {
 
 interface FriendRequestResponse {
   addingId: number;
-  friend?: FriendRequestUser;
+  friendConversation?: FriendConversation;
+  systemMessage?: ConversationMessage;
 }
 
 export interface Friend {
@@ -46,7 +48,7 @@ export interface Friend {
 export interface FriendConversation {
   conversationId: number;
   friend: Friend;
-  lastMessage: { message: string, createdAtTime: string, createdAt: string };
+  lastMessage?: { message: string, createdAtTime: string, createdAt: string };
   active: boolean;
 }
 
@@ -54,6 +56,7 @@ export interface ConversationMessage {
   id: number;
   conversationId: number;
   message: string;
+  is_system: number;
   createdAtTime: string;
   createdAt: string;
   Sender: User;
@@ -121,8 +124,16 @@ export const chatSlice = createSlice({
     acceptFriendReduce(state, action: PayloadAction<FriendRequestResponse>) {
       state.requests.count = state.requests.count - 1;
       state.requests.friendRequests = state.requests.friendRequests.filter(item => item.User1.id !== action.payload.addingId);
-      // TO FIX!
-      //state.friends = [ ...state.friends, action.payload! ];
+      
+      // reset previous active
+      state.friends = state.friends.map(item => ({ ...item, active: false }));
+      state.friends = [ ...state.friends, action.payload.friendConversation! ];
+
+      state.messages = { items: [ action.payload.systemMessage! ], fetchDone: true };
+
+      if(!state.hasFriends) {
+        state.hasFriends = true;
+      }
     },
     denyFriendReduce(state, action: PayloadAction<FriendRequestResponse>) {
       state.requests.count = state.requests.count - 1;
@@ -155,6 +166,9 @@ export const chatSlice = createSlice({
         };
       });
     },
+    resetMessagesReduce(state) {
+      state.messages = { ...state.messages, fetchDone: false };
+    },
     signOutCleanupChat(state) {
       state.friends = [];
       state.friendAdded = false;
@@ -168,13 +182,14 @@ export const chatSlice = createSlice({
       
       state.friendsFetched = false;
       state.initMessages = false;
+      state.hasFriends = false;
     },
   },
 });
 
 export const { addMessageReduce, signOutCleanupChat } = chatSlice.actions;
 
-const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce } = chatSlice.actions;
+const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce, resetMessagesReduce } = chatSlice.actions;
 
 export const getPossibleFriends = (id: number): AppThunk => async dispatch => {
   try {
@@ -214,11 +229,17 @@ export const addFriend = (addingId: number, friendId: number): AppThunk => async
   }
 };
 
-export const acceptFriend = (addingId: number, friendId: number, friend: FriendRequestUser): AppThunk => async dispatch => {
+export const acceptFriend = (addingId: number, friendId: number, friend: Friend): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/friends/accept-friend', { addFriendData: { addingId, friendId } });
+    const response = await axios.post('http://localhost:5000/api/friends/accept-friend', { addFriendData: { addingId, friendId } });
 
-    dispatch(acceptFriendReduce({ addingId, friend }));
+    const friendConversation: FriendConversation = { 
+      conversationId: response.data.conversationId, 
+      friend,
+      active: true 
+    };
+
+    dispatch(acceptFriendReduce({ addingId, friendConversation, systemMessage: createInitialConversationMessage(response.data.newConversationMessage) }));
   } catch (err) {
     console.log('Accept friend requests error', err);
   }
@@ -252,7 +273,8 @@ export const selectFriend = (authUserId: number, receiverId: number, initMessage
   try {
     const response = await axios.get<{
       items: ConversationMessage[],
-      conversationId: number
+      conversationId: number,
+      newConversationMessage: string
     }>('http://localhost:5000/api/friends/select-friend', {
       params: {
         authUserId,
@@ -260,11 +282,18 @@ export const selectFriend = (authUserId: number, receiverId: number, initMessage
       }
     });
 
+    response.data.items.unshift(createInitialConversationMessage(response.data.newConversationMessage));
+
     dispatch(updateMessagesReduce({messages: response.data.items, currentConversationId: response.data.conversationId, receiverId, initMessages}));
   } catch (err) {
     console.log('Select friend error', err);
   }
 };
+
+export const resetMessages = (): AppThunk => async dispatch => {
+  dispatch(resetMessagesReduce());
+};
+
 
 export const selectMessages = (state: RootState) => state.chat.messages;
 export const selectFriendRequests = (state: RootState) => state.chat.requests;

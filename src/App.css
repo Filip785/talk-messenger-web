@@ -143,6 +143,11 @@ html, body, #root, .App {
   justify-content: flex-end;
 }
 
+.messages .message-system {
+  display: flex;
+  justify-content: center;
+}
+
 .auth-buttons-group {
   display: flex;
   justify-content: center;
