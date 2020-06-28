@@ -47,6 +47,10 @@ const FriendRequests = React.memo((props: Props) => {
         dispatch(addMessageReduce(receivedMessage));
       });
 
+      props.socket.emit('join-rooms', {
+        id: authUser.id!
+      });
+
       dispatch(getFriendRequests(authUser.id!, authUser.api_token!));
     }
   });
