@@ -18,8 +18,8 @@ export default function AddFriendModal(props: Props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getPossibleFriends(authUser.id!));
-  }, [form, dispatch, authUser.id]);
+    dispatch(getPossibleFriends(authUser.id!, authUser.api_token!));
+  }, [form, dispatch, authUser.id, authUser.api_token]);
 
   return (
     <Modal
@@ -31,7 +31,7 @@ export default function AddFriendModal(props: Props) {
     >
       <Form
         name="sign-in"
-        onFinish={() => dispatch(addFriend(authUser.id!, form.getFieldValue('usernameId')))}
+        onFinish={() => dispatch(addFriend(authUser.id!, form.getFieldValue('usernameId'), authUser.api_token!))}
         form={form}
       >
         <Form.Item

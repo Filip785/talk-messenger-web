@@ -11,12 +11,6 @@ export interface Message {
   is_system: boolean;
 }
 
-// interface FriendRequestUser {
-//   id: number;
-//   username: string;
-//   avatar: string;
-// }
-
 interface FriendRequest {
   id: number;
   User1: Friend;
@@ -102,7 +96,7 @@ export const chatSlice = createSlice({
                 item = { 
                   ...item, 
                   lastMessage: { 
-                    message: action.payload.message, 
+                    message: `${action.payload.Sender.username}: ${action.payload.message}`, 
                     createdAtTime: action.payload.createdAtTime, 
                     createdAt: action.payload.createdAt 
                   } 
@@ -191,11 +185,14 @@ export const { addMessageReduce, signOutCleanupChat } = chatSlice.actions;
 
 const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce, resetMessagesReduce } = chatSlice.actions;
 
-export const getPossibleFriends = (id: number): AppThunk => async dispatch => {
+export const getPossibleFriends = (id: number, apiToken: string): AppThunk => async dispatch => {
   try {
     const response = await axios.get('http://localhost:5000/api/friends/possible-friends', {
       params: {
         currentUserId: id
+      },
+      headers: {
+        Authorization: `Bearer ${apiToken}`
       }
     });
 
@@ -205,11 +202,14 @@ export const getPossibleFriends = (id: number): AppThunk => async dispatch => {
   }
 };
 
-export const getFriendRequests = (id: number): AppThunk => async dispatch => {
+export const getFriendRequests = (id: number, apiToken: string): AppThunk => async dispatch => {
   try {
     const response = await axios.get('http://localhost:5000/api/friends/friend-requests', {
       params: {
         currentUserId: id
+      },
+      headers: {
+        Authorization: `Bearer ${apiToken}`
       }
     });
     
@@ -219,9 +219,13 @@ export const getFriendRequests = (id: number): AppThunk => async dispatch => {
   }
 };
 
-export const addFriend = (addingId: number, friendId: number): AppThunk => async dispatch => {
+export const addFriend = (addingId: number, friendId: number, apiToken: string): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/friends/add-friend', { addFriendData: { addingId, friendId } });
+    await axios.post('http://localhost:5000/api/friends/add-friend', { addFriendData: { addingId, friendId } }, {
+      headers: {
+        Authorization: `Bearer ${apiToken}`
+      }
+    });
 
     dispatch(addFriendReduce());
   } catch (err) {
@@ -229,9 +233,13 @@ export const addFriend = (addingId: number, friendId: number): AppThunk => async
   }
 };
 
-export const acceptFriend = (addingId: number, friendId: number, friend: Friend): AppThunk => async dispatch => {
+export const acceptFriend = (addingId: number, friendId: number, friend: Friend, apiToken: string): AppThunk => async dispatch => {
   try {
-    const response = await axios.post('http://localhost:5000/api/friends/accept-friend', { addFriendData: { addingId, friendId } });
+    const response = await axios.post('http://localhost:5000/api/friends/accept-friend', { addFriendData: { addingId, friendId } }, {
+      headers: {
+        Authorization: `Bearer ${apiToken}`
+      }
+    });
 
     const friendConversation: FriendConversation = { 
       conversationId: response.data.conversationId, 
@@ -245,9 +253,13 @@ export const acceptFriend = (addingId: number, friendId: number, friend: Friend)
   }
 };
 
-export const denyFriend = (addingId: number, friendId: number): AppThunk => async dispatch => {
+export const denyFriend = (addingId: number, friendId: number, apiToken: string): AppThunk => async dispatch => {
   try {
-    await axios.post('http://localhost:5000/api/friends/deny-friend', { addFriendData: { addingId, friendId } });
+    await axios.post('http://localhost:5000/api/friends/deny-friend', { addFriendData: { addingId, friendId } }, {
+      headers: {
+        Authorization: `Bearer ${apiToken}`
+      }
+    });
 
   dispatch(denyFriendReduce({ addingId }));
   } catch (err) {
@@ -255,11 +267,14 @@ export const denyFriend = (addingId: number, friendId: number): AppThunk => asyn
   }
 };
 
-export const getFriends = (currentUserId: number): AppThunk => async dispatch => {
+export const getFriends = (currentUserId: number, apiToken: string): AppThunk => async dispatch => {
   try {
     const response = await axios.get('http://localhost:5000/api/friends/get-friends', {
       params: {
         currentUserId
+      },
+      headers: {
+        Authorization: `Bearer ${apiToken}`
       }
     });
 
@@ -269,16 +284,15 @@ export const getFriends = (currentUserId: number): AppThunk => async dispatch =>
   }
 };
 
-export const selectFriend = (authUserId: number, receiverId: number, initMessages: boolean): AppThunk => async dispatch => {
+export const selectFriend = (authUserId: number, receiverId: number, initMessages: boolean, apiToken: string): AppThunk => async dispatch => {
   try {
-    const response = await axios.get<{
-      items: ConversationMessage[],
-      conversationId: number,
-      newConversationMessage: string
-    }>('http://localhost:5000/api/friends/select-friend', {
+    const response = await axios.get('http://localhost:5000/api/friends/select-friend', {
       params: {
         authUserId,
         receiverId
+      },
+      headers: {
+        Authorization: `Bearer ${apiToken}`
       }
     });
 

@@ -60,7 +60,7 @@ export default function FriendsSidebar() {
 
   useEffect(() => {
     if(!friendsFetched) {
-      dispatch(getFriends(authUser.id!));
+      dispatch(getFriends(authUser.id!, authUser.api_token!));
     }
     
     // fetch the initial conversation after logging in
@@ -74,7 +74,7 @@ export default function FriendsSidebar() {
         history.push(`/c/${friends[0].friend.id}`);
       }
     }
-  }, [dispatch, authUser.id, friendsFetched, friends, initMessages]);
+  }, [dispatch, authUser.id, authUser.api_token, friendsFetched, friends, initMessages]);
   
   return (
     <>

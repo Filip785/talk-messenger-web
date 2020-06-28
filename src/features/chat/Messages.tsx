@@ -14,9 +14,9 @@ export default function Messages() {
 
   useEffect(() => {
     if(!messages.fetchDone) {
-      dispatch(selectFriend(authUser.id!, Number(params.id), false));
+      dispatch(selectFriend(authUser.id!, Number(params.id), false, authUser.api_token!));
     }
-  }, [dispatch, authUser.id, params.id, messages.fetchDone]);
+  }, [dispatch, authUser.id, authUser.api_token, params.id, messages.fetchDone]);
 
   return (
     <>

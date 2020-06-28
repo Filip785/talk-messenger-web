@@ -14,6 +14,7 @@ interface FriendRequestsProps {
   requests: Requests;
   dispatch: Dispatch<any>;
   authUserId: number;
+  authUserToken: string;
 }
 
 function FriendRequestsContent(props: FriendRequestsProps) {
@@ -26,8 +27,8 @@ function FriendRequestsContent(props: FriendRequestsProps) {
             <span>{request.User1.username} added you</span>
           </div>
           <div className="accept-deny-btns">
-            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(acceptFriend(request.User1.id, props.authUserId, request.User1))} style={{ marginRight: 16 }}>Accept</Button>
-            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(denyFriend(request.User1.id, props.authUserId))}>Deny</Button>
+            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(acceptFriend(request.User1.id, props.authUserId, request.User1, props.authUserToken))} style={{ marginRight: 16 }}>Accept</Button>
+            <Button htmlType="submit" type="primary" size="large" onClick={() => props.dispatch(denyFriend(request.User1.id, props.authUserId, props.authUserToken))}>Deny</Button>
           </div>
         </div>
       ))}
@@ -46,12 +47,12 @@ const FriendRequests = React.memo((props: Props) => {
         dispatch(addMessageReduce(receivedMessage));
       });
 
-      dispatch(getFriendRequests(authUser.id!));
+      dispatch(getFriendRequests(authUser.id!, authUser.api_token!));
     }
   });
 
   return (
-    <Popover content={requests.count === 0 ? (<h1>No content</h1>) : <FriendRequestsContent requests={requests} dispatch={dispatch} authUserId={authUser.id!} />} title="Current Friend Requests" trigger="click">
+    <Popover content={requests.count === 0 ? (<h1>No content</h1>) : <FriendRequestsContent requests={requests} dispatch={dispatch} authUserId={authUser.id!} authUserToken={authUser.api_token!} />} title="Current Friend Requests" trigger="click">
       <Badge count={requests.count}>
         <UserOutlined style={{ fontSize: 32 }} />
       </Badge>
