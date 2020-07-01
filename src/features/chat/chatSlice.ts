@@ -3,6 +3,7 @@ import { RootState, AppThunk } from '../../app/store';
 import { User } from '../../models/User';
 import axios from 'axios';
 import { createInitialConversationMessage } from '../../shared/message-helper';
+import { handleAPIError } from '../../shared/error-helper';
 
 export interface Message {
   id: number;
@@ -198,7 +199,7 @@ export const getPossibleFriends = (id: number, apiToken: string): AppThunk => as
 
     dispatch(getPossibleFriendsReduce(response.data));
   } catch (err) {
-    console.log('Get possible friends error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -215,7 +216,7 @@ export const getFriendRequests = (id: number, apiToken: string): AppThunk => asy
     
     dispatch(getFriendRequestsReduce(response.data));
   } catch (err) {
-    console.log('Get friend requests error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -229,7 +230,7 @@ export const addFriend = (addingId: number, friendId: number, apiToken: string):
 
     dispatch(addFriendReduce());
   } catch (err) {
-    console.log('Get friend requests error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -249,7 +250,7 @@ export const acceptFriend = (addingId: number, friendId: number, friend: Friend,
 
     dispatch(acceptFriendReduce({ addingId, friendConversation, systemMessage: createInitialConversationMessage(response.data.newConversationMessage) }));
   } catch (err) {
-    console.log('Accept friend requests error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -263,7 +264,7 @@ export const denyFriend = (addingId: number, friendId: number, apiToken: string)
 
   dispatch(denyFriendReduce({ addingId }));
   } catch (err) {
-    console.log('Deny friend requests error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -280,7 +281,7 @@ export const getFriends = (currentUserId: number, apiToken: string): AppThunk =>
 
     dispatch(getFriendsReduce(response.data));
   } catch (err) {
-    console.log('Get friends requests error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
@@ -300,14 +301,13 @@ export const selectFriend = (authUserId: number, receiverId: number, initMessage
 
     dispatch(updateMessagesReduce({messages: response.data.items, currentConversationId: response.data.conversationId, receiverId, initMessages}));
   } catch (err) {
-    console.log('Select friend error', err);
+    handleAPIError(err, dispatch);
   }
 };
 
 export const resetMessages = (): AppThunk => async dispatch => {
   dispatch(resetMessagesReduce());
 };
-
 
 export const selectMessages = (state: RootState) => state.chat.messages;
 export const selectFriendRequests = (state: RootState) => state.chat.requests;

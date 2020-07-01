@@ -92,13 +92,13 @@ html, body, #root, .App {
   background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25));
 }
 
-.anticon.anticon-loading {
+.chat-section .anticon.anticon-loading {
   background: linear-gradient(rgba(0, 0, 0, 0.25),rgba(0, 0, 0, 0.25));
   height: 100%;
   position: relative;
 }
 
-.anticon.anticon-loading .anticon-spin {
+.chat-section .anticon.anticon-loading .anticon-spin {
   position: absolute;
   top: calc(50% - 96px);
   left: calc(50% - 64px);
@@ -171,4 +171,40 @@ html, body, #root, .App {
 
 .friends-sidebar .ant-list-item.active {
   background-color: rgba(0, 0, 0, .05);
+}
+
+.ReactJsonSyntaxHighlighter pre {
+  font-size: 9pt;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.ReactJsonSyntaxHighlighter .string {
+  color: #008000;
+}
+.ReactJsonSyntaxHighlighter .number {
+  color: #ff8c00;
+}
+.ReactJsonSyntaxHighlighter .boolean {
+  color: #00f;
+}
+.ReactJsonSyntaxHighlighter .null {
+  color: #f0f;
+}
+.ReactJsonSyntaxHighlighter .key {
+  color: #f00;
+}
+
+.error-report-alert {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+}
+
+.error-report-alert .ant-alert {
+  width: 400px;  
 }
