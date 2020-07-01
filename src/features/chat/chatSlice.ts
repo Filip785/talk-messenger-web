@@ -91,7 +91,10 @@ export const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessageReduce(state, action: PayloadAction<ConversationMessage>) {
-      state.messages = { ...state.messages, items: [ ...state.messages.items, action.payload ] };
+      if (state.currentConversationId === action.payload.conversationId) {
+        state.messages = { ...state.messages, items: [ ...state.messages.items, action.payload ] };
+      }
+
       state.friends = state.friends.map(
         item => item.conversationId === action.payload.conversationId ? 
                 item = { 

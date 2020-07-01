@@ -3,8 +3,9 @@ import { ConversationMessage, addMessageReduce, getFriendRequests, selectFriendR
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '../../models/User';
 import { selectAuthUser } from '../auth/authSlice';
-import { Popover, Badge, Avatar, Button } from 'antd';
+import { Popover, Badge, Avatar, Button, notification } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import history from '../../shared/history';
 
 interface Props {
   socket: SocketIOClient.Socket;
@@ -47,7 +48,14 @@ const FriendRequests = React.memo((props: Props) => {
         // notification sound
         if(receivedMessage.Sender.id !== authUser.id) {
           new Audio('/audio/notification.mp3').play();
-          // to add: message
+          
+          notification.open({
+            message: receivedMessage.Sender.username,
+            description: receivedMessage.message,
+            onClick() {
+              history.push(`/c/${receivedMessage.Sender.id}`);
+            }
+          });
         }
 
         dispatch(addMessageReduce(receivedMessage));

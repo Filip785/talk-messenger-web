@@ -5,6 +5,19 @@ import { showErrorReportDialogReduce, setErrorObjectReduce } from '../features/e
 import history from './history';
 import createErrorObject from './error-creator';
 
+interface ErrorFormat {
+  response: { 
+    data: { 
+      error: string 
+    }, 
+    status: number, 
+    statusText: string, 
+    config: { 
+      url: string 
+    } 
+  }
+}
+
 export default function frontendLogout(dispatch: Dispatch<AnyAction>, withErrorReporting: boolean) {
   localStorage.removeItem('authUser');
   
@@ -18,7 +31,7 @@ export default function frontendLogout(dispatch: Dispatch<AnyAction>, withErrorR
   history.push('/auth');
 }
 
-export function handleAPIError(err: { response: { data: { error: string }, status: number, statusText: string, config: { url: string } } }, dispatch: Dispatch<AnyAction>) {
+export function handleAPIError(err: ErrorFormat, dispatch: Dispatch<AnyAction>) {
   if (err.response.data.error === 'jwt expired') {
     frontendLogout(dispatch, false);
     return;
