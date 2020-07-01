@@ -44,6 +44,12 @@ const FriendRequests = React.memo((props: Props) => {
   useEffect(() => {
     if (!requests.didInit) {
       props.socket.on('message-received', (receivedMessage: ConversationMessage) => {
+        // notification sound
+        if(receivedMessage.Sender.id !== authUser.id) {
+          new Audio('/audio/notification.mp3').play();
+          // to add: message
+        }
+
         dispatch(addMessageReduce(receivedMessage));
       });
 
