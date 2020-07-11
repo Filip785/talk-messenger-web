@@ -4,6 +4,7 @@ import { User } from '../../models/User';
 import axios from 'axios';
 import { createInitialConversationMessage } from '../../shared/message-helper';
 import { handleAPIError } from '../../shared/error-helper';
+import { animateScroll } from 'react-scroll';
 
 export interface Message {
   id: number;
@@ -146,26 +147,12 @@ export const chatSlice = createSlice({
       state.messages = { items: action.payload.messages, fetchDone: true };
       state.currentConversationId = action.payload.currentConversationId;
       state.currentReceiverId = action.payload.receiverId;
+      
       if(!state.initMessages) {
         state.initMessages = true;
       }
 
-      state.friends = state.friends.map(item => {
-        if (item.conversationId !== action.payload.currentConversationId) {
-          return {
-            ...item,
-            active: false
-          };
-        }
-
-        return {
-          ...item,
-          active: true
-        };
-      });
-    },
-    resetMessagesReduce(state) {
-      state.messages = { ...state.messages, fetchDone: false };
+      state.friends = state.friends.map(item => ({ ...item, active: item.conversationId === action.payload.currentConversationId }));
     },
     signOutCleanupChat(state) {
       state.friends = [];
@@ -187,7 +174,7 @@ export const chatSlice = createSlice({
 
 export const { addMessageReduce, signOutCleanupChat } = chatSlice.actions;
 
-const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce, resetMessagesReduce } = chatSlice.actions;
+const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce } = chatSlice.actions;
 
 export const getPossibleFriends = (id: number, apiToken: string): AppThunk => async dispatch => {
   try {
@@ -303,13 +290,14 @@ export const selectFriend = (authUserId: number, receiverId: number, initMessage
     response.data.items.unshift(createInitialConversationMessage(response.data.newConversationMessage));
 
     dispatch(updateMessagesReduce({messages: response.data.items, currentConversationId: response.data.conversationId, receiverId, initMessages}));
+
+    animateScroll.scrollToBottom({
+      containerId: 'messages',
+      duration: 0
+    });
   } catch (err) {
     handleAPIError(err, dispatch);
   }
-};
-
-export const resetMessages = (): AppThunk => async dispatch => {
-  dispatch(resetMessagesReduce());
 };
 
 export const selectMessages = (state: RootState) => state.chat.messages;
