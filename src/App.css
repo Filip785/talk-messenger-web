@@ -162,13 +162,6 @@ html, body, #root, .App {
   margin-top: 12px;
 }
 
-.friends-sidebar .ant-list-item-meta-description {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 300px;
-}
-
 .friends-sidebar .ant-list-item.active {
   background-color: rgba(0, 0, 0, .05);
 }
@@ -207,4 +200,28 @@ html, body, #root, .App {
 
 .error-report-alert .ant-alert {
   width: 400px;  
+}
+
+.friends-sidebar .ant-list-item-meta-content {
+  overflow: hidden;
+}
+
+.friends-sidebar .ant-list-item-meta-description {
+  display: flex;
+  font-size: 13px;
+}
+
+.ant-list-item-meta-description .msg-content {
+  overflow: hidden;
+  white-space: pre;
+  text-overflow: ellipsis;
+}
+
+.ant-list-item-meta-description .separator {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.ant-list-item-meta-description .timestamp {
+  white-space: nowrap;
 }

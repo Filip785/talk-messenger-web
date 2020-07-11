@@ -27,16 +27,14 @@ const FriendsList = (props: FriendsListProps) => (
               <Avatar src={item.friend.avatar} />
             }
             title={item.friend.username}
-            description={item.lastMessage ? item.lastMessage.message : 'No messages'}
+            description={
+              <>
+                <div className="msg-content">{item.lastMessage ? item.lastMessage.message : 'No messages'}</div>
+                <div className="separator">·</div>
+                <div className="timestamp">{item.lastMessage ? item.lastMessage.createdAtTime : ''}</div>
+              </>
+            }
           />
-          <div>
-            <div style={{textAlign: 'center'}}>
-              {item.lastMessage ? item.lastMessage.createdAtTime : ''}
-            </div>
-            <div>
-              {item.lastMessage ? item.lastMessage.createdAt : ''}
-            </div>
-          </div>
         </List.Item>
       </Link>
     )}></List>

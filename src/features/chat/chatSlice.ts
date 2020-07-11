@@ -101,7 +101,7 @@ export const chatSlice = createSlice({
                 item = { 
                   ...item, 
                   lastMessage: { 
-                    message: `${action.payload.Sender.username}: ${action.payload.message}`, 
+                    message: action.payload.message, 
                     createdAtTime: action.payload.createdAtTime, 
                     createdAt: action.payload.createdAt 
                   } 
