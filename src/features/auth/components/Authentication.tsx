@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, message } from 'antd';
 import SignInModal from './SignInModal';
 import SignUpModal from './SignUpModal';
-import { selectRegistered } from '../authSlice';
+import { selectRegistered, selectJwtExpired } from '../authSlice';
 import { useSelector } from 'react-redux';
 
 export default function Authentication() {
   const registered = useSelector(selectRegistered);
+  const jwtExpired = useSelector(selectJwtExpired);
 
-  const [visibleSignInModal, setVisibleSignInModal] = useState(false);
+  const [visibleSignInModal, setVisibleSignInModal] = useState(jwtExpired);
   const [visibleSignUpModal, setVisibleSignUpModal] = useState(false);
 
   useEffect(() => {
@@ -16,8 +17,13 @@ export default function Authentication() {
       setVisibleSignUpModal(false);
       setVisibleSignInModal(registered);
     }
-    
-  }, [registered]);
+
+    if(jwtExpired) {
+      setVisibleSignInModal(jwtExpired);
+
+      message.error('Session expired. Please login again below.')
+    }
+  }, [registered, jwtExpired]);
 
   return (
     <div className="auth-wrapper">

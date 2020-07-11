@@ -12,7 +12,8 @@ interface AuthState {
   },
   registered: boolean,
   loginError: boolean,
-  registerError: boolean
+  registerError: boolean,
+  jwtExpired: boolean
 }
 
 const initialState: AuthState = {
@@ -25,7 +26,8 @@ const initialState: AuthState = {
   },
   registered: false,
   loginError: false,
-  registerError: false
+  registerError: false,
+  jwtExpired: false
 };
 
 export const authSlice = createSlice({
@@ -37,6 +39,10 @@ export const authSlice = createSlice({
         loggedIn: { status: true, fromAuth: true },
         authUser: action.payload
       };
+
+      if(state.jwtExpired) {
+        state.jwtExpired = false;
+      }
     },
     attemptLoginFailure(state) {
       state.loginError = true;
@@ -59,11 +65,14 @@ export const authSlice = createSlice({
         authUser: { id: 0, username: '', avatar: '', api_token: '' }
       };
       state.registered = false;
+    },
+    jwtExpiredReduce(state) {
+      state.jwtExpired = true;
     }
   },
 });
 
-export const { attemptLoginFailureEnd, attemptRegisterFailureEnd, signOutReduce } = authSlice.actions;
+export const { attemptLoginFailureEnd, attemptRegisterFailureEnd, signOutReduce, jwtExpiredReduce } = authSlice.actions;
 
 const { attemptLoginReduce, attemptRegisterReduce, attemptLoginFailure, attemptRegisterFailure } = authSlice.actions;
 
@@ -90,6 +99,7 @@ export const attemptRegister = (username: string, password: string): AppThunk =>
   }
 };
 
+export const selectJwtExpired = (state: RootState) => state.auth.jwtExpired;
 export const selectLoginError = (state: RootState) => state.auth.loginError;
 export const selectRegisterError = (state: RootState) => state.auth.registerError;
 export const selectLoggedIn = (state: RootState) => state.auth.user.loggedIn;

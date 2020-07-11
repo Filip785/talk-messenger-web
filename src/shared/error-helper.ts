@@ -1,6 +1,6 @@
 import { Dispatch, AnyAction } from 'redux';
 import { signOutCleanupChat } from '../features/chat/chatSlice';
-import { signOutReduce } from '../features/auth/authSlice';
+import { signOutReduce, jwtExpiredReduce } from '../features/auth/authSlice';
 import { showErrorReportDialogReduce, setErrorObjectReduce } from '../features/error/errorSlice';
 import history from './history';
 import createErrorObject from './error-creator';
@@ -27,6 +27,8 @@ export default function frontendLogout(dispatch: Dispatch<AnyAction>, withErrorR
   if(withErrorReporting) {
     dispatch(showErrorReportDialogReduce());
   }
+
+  dispatch(jwtExpiredReduce());
 
   history.push('/auth');
 }
