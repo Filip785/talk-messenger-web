@@ -5,6 +5,7 @@ import { Comment, Avatar } from 'antd';
 import { User } from '../../models/User';
 import { selectAuthUser } from '../auth/authSlice';
 import { useParams } from 'react-router';
+import Linkify from 'react-linkify';
 
 interface Props {
   socket: SocketIOClient.Socket;
@@ -62,7 +63,9 @@ export default function Messages(props: Props) {
             content={
               <>
                 <p>
-                  {message.message}
+                  <Linkify componentDecorator={(href, text, key) => <a href={href} key={key} target="_blank" rel="noopener noreferrer" className="msg-link-text">{text}</a>}>
+                    {message.message}
+                  </Linkify>
                 </p>
                 {(messages.items.length - 1 === index) && <p className="read-info">
                   {message.isSeen ? <span>Seen at {message.isSeenAt}</span> : <span>Delivered on {message.isSeenAt}</span>}

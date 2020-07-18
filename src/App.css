@@ -258,3 +258,13 @@ html, body, #root, .App {
   text-align: right;
   font-size: 12px;
 }
+
+.msg-link-text {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.msg-link-text:hover, .msg-link-text:active, .msg-link-text:focus {
+  color: #fff;
+  text-decoration: underline;
+}
