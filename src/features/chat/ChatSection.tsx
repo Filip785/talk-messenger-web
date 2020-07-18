@@ -66,7 +66,7 @@ export default function ChatSection() {
             <>
               <Switch>
                 <Route path='/c/:id'>
-                  <Messages />
+                  <Messages socket={socket} />
                 </Route>
               </Switch>
               

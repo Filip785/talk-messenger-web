@@ -110,7 +110,7 @@ html, body, #root, .App {
 }
 
 .ant-comment {
-  padding: 25px;
+  padding: 10px;
 }
 
 .ant-comment .ant-comment-inner {
@@ -206,6 +206,10 @@ html, body, #root, .App {
   overflow: hidden;
 }
 
+.reply-section .ant-form-item:not(.buttonItem) {
+  margin-bottom: 12px;
+}
+
 .friends-sidebar .ant-list-item-meta-description {
   display: flex;
   font-size: 13px;
@@ -224,4 +228,33 @@ html, body, #root, .App {
 
 .ant-list-item-meta-description .timestamp {
   white-space: nowrap;
+}
+
+.messages .ant-comment.message-current .ant-comment-content {
+  background-color: rgb(24, 144, 255);
+}
+
+.messages .ant-comment.message-friend .ant-comment-content {
+  background-color: rgb(82, 196, 26);
+}
+
+.messages .ant-comment.has-no-avatar .ant-comment-inner {
+  padding-left: 32px;
+}
+
+.messages .ant-comment:not(.message-system) .ant-comment-content {
+  padding: 10px;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.messages .ant-comment:not(.message-system) .ant-comment-content .ant-comment-content-author-name a {
+  color: #fff;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.messages .ant-comment:not(.message-system) .ant-comment-content .read-info {
+  text-align: right;
+  font-size: 12px;
 }

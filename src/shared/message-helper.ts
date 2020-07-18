@@ -9,8 +9,10 @@ export function createInitialConversationMessage(newConversationMessage: string)
     message: newConversationMessage, 
     createdAt: dateTime.toDateString(), 
     createdAtTime: dateTime.toTimeString(), 
-    is_system: 1, 
+    isSystem: 1, 
     Sender: { username: '', avatar: '' }, 
-    Receiver: { username: '', avatar: '' } 
+    Receiver: { username: '', avatar: '' },
+    isSeen: 0,
+    isSeenAt: ''
   };
 }

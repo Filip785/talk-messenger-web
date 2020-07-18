@@ -6,6 +6,7 @@ import { selectAuthUser } from '../auth/authSlice';
 import { Popover, Badge, Avatar, Button, notification } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import history from '../../shared/history';
+import { animateScroll } from 'react-scroll';
 
 interface Props {
   socket: SocketIOClient.Socket;
@@ -59,6 +60,11 @@ const FriendRequests = React.memo((props: Props) => {
         }
 
         dispatch(addMessageReduce(receivedMessage));
+
+        animateScroll.scrollToBottom({
+          containerId: 'messages',
+          duration: 0
+        });
       });
 
       props.socket.emit('join-rooms', {

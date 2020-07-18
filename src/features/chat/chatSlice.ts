@@ -10,7 +10,7 @@ export interface Message {
   id: number;
   sendingUser: User;
   content: string;
-  is_system: boolean;
+  isSystem: boolean;
 }
 
 interface FriendRequest {
@@ -52,7 +52,9 @@ export interface ConversationMessage {
   id: number;
   conversationId: number;
   message: string;
-  is_system: number;
+  isSystem: number;
+  isSeen: number;
+  isSeenAt: string;
   createdAtTime: string;
   createdAt: string;
   Sender: User;
@@ -154,6 +156,9 @@ export const chatSlice = createSlice({
 
       state.friends = state.friends.map(item => ({ ...item, active: item.conversationId === action.payload.currentConversationId }));
     },
+    updateMessageSeenStatus(state) {
+      state.messages.items[state.messages.items.length - 1].isSeen = 1;
+    },
     signOutCleanupChat(state) {
       state.friends = [];
       state.friendAdded = false;
@@ -172,7 +177,7 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { addMessageReduce, signOutCleanupChat } = chatSlice.actions;
+export const { addMessageReduce, updateMessageSeenStatus, signOutCleanupChat } = chatSlice.actions;
 
 const { getFriendRequestsReduce, getPossibleFriendsReduce, addFriendReduce, acceptFriendReduce, denyFriendReduce, getFriendsReduce, updateMessagesReduce } = chatSlice.actions;
 
