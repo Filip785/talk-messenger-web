@@ -156,8 +156,14 @@ export const chatSlice = createSlice({
 
       state.friends = state.friends.map(item => ({ ...item, active: item.conversationId === action.payload.currentConversationId }));
     },
-    updateMessageSeenStatus(state) {
-      state.messages.items[state.messages.items.length - 1].isSeen = 1;
+    updateMessageSeenStatus(state, action: PayloadAction<string>) {
+      const lastIndex = state.messages.items.length - 1;
+      
+      state.messages.items[lastIndex] = {
+        ...state.messages.items[lastIndex],
+        isSeen: 1,
+        isSeenAt: action.payload
+      };
     },
     signOutCleanupChat(state) {
       state.friends = [];

@@ -26,8 +26,8 @@ export default function Messages(props: Props) {
     const lastMessage = messages.items[messages.items.length - 1];
 
     if(!props.socket.hasListeners('message-seen-update')) {
-      props.socket.on('message-seen-update', () => {
-        dispatch(updateMessageSeenStatus());
+      props.socket.on('message-seen-update', (isSeenAt: string) => {
+        dispatch(updateMessageSeenStatus(isSeenAt));
       });
     }
 
@@ -38,7 +38,7 @@ export default function Messages(props: Props) {
       }
     }
   }, [dispatch, props.socket, conversationId, messages.items, authUser.id]);
-
+  
   return (
     <div className="messages" id="messages">
       {messages.items.map((message, index, itemsArray) => {
@@ -67,8 +67,8 @@ export default function Messages(props: Props) {
                     {message.message}
                   </Linkify>
                 </p>
-                {(messages.items.length - 1 === index) && <p className="read-info">
-                  {message.isSeen ? <span>Seen at {message.isSeenAt}</span> : <span>Delivered on {message.isSeenAt}</span>}
+                {(messages.items.length - 1 === index) && message.isSystem !== 1 && <p className="read-info">
+                  { message.isSeen ? <span>Seen on {message.isSeenAt}</span> : <span>Delivered on {message.isSeenAt}</span> }
                 </p>}
               </>
             }
